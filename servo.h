@@ -26,50 +26,70 @@
 
 #include <applibs/pwm.h>
 
-class CServo {
-public: 
-    CServo(PWM_ControllerId pwmControllerId);
-	~CServo(); 
+class CServoController
+{
+public:
+    CServoController(PWM_ControllerId pwmControllerId);
+    ~CServoController();
 
     // Opens the PWM Controller
-    // Preconditions: 
+    // Preconditions:
     //   The pwmController is closed (has no open file handles)
     //   The pwmController is correctly added to the app_manifest_json
-    // Postconditions: 
-    //   if the return value < 0 an error occured. 
+    // Postconditions:
+    //   if the return value < 0 an error occured.
     //   if the return value is >= 0 then the pwmController is open and the file descriptor is returned.
-    int Open(); 
+    int Open();
 
     // Preconditions: None
-    // Postconditions: 
-    //  If Open were previously called, then the file descriptor is closed. 
+    // Postconditions:
+    //  If Open were previously called, then the file descriptor is closed.
     void Close();
 
+    int GetFileDescriptor()
+    {
+        return _fdPwm;
+    }
+
+private:
+    PWM_ControllerId _pwmControllerId;
+    int _fdPwm = 0;
+};
+
+class CServoChannel
+{
+public:
+    CServoChannel(int pwmFileDescriptor, PWM_ChannelId channel)
+        : _fdPwm(pwmFileDescriptor),
+          _channel(channel)
+    {
+    }
+
     // Sets the servo paremeters used in the calcuations for subsequent calls to SetAngle or SetPulseTime.
-    // This call does not immediatly update the hardware. 
-    // Preconditions: 
+    // This call does not immediatly update the hardware.
+    // Preconditions:
     //   period_ms is between 1 and 1000
     //   pulse_min_us is strictly less than the period and pulse_max_ms
     //   pulse_max_us is less than or equal to the period and greater than pluse_min_us
-    // Postconditions: Internal variables are set, or a non-zero value is returned. 
-    int SetServoParameters(uint32_t period_ms = 20, uint32_t pulse_min_us = 1000, uint32_t pulse_max_us = 2000);
+    // Postconditions: Internal variables are set, or a non-zero value is returned.
+    int SetServoParameters(uint32_t period_ms, uint32_t pulse_min_us, uint32_t pulse_max_us);
 
     // Set the servo SetAngle
     // Preconditions:
-    //   channel is valid for the hardware in use. 
+    //   channel is valid for the hardware in use.
     //   angle is 0 - 180 inclusive
-    int SetAngle(PWM_ChannelId channel, uint8_t angle);
+    int SetAngle(uint8_t angle);
 
-    // Sets the pluse width of the pluse sent to the servo.  
-    // Preconditions: 
+    // Sets the pluse width of the pluse sent to the servo.
+    // Preconditions:
     //   channel is valid for the hardware in use
     //   pulse_width_us is within pulse_min_us and pulse_max_us (inclusive)
-    int SetPulseWidth(PWM_ChannelId channel, uint32_t pulse_width_us);
+    int SetPulseWidth(uint32_t pulse_width_us);
 
 private:
-    PWM_ControllerId _pwmControllerId; 
-    int _fdPwm; 
-    uint32_t _period_ms;
-    uint32_t _pulse_min_us; 
-    uint32_t _pulse_max_us;
+    int _fdPwm;
+    PWM_ChannelId _channel;
+    uint32_t _period_ms = 20;
+    uint32_t _pulse_min_us = 1000;
+    uint32_t _pulse_max_us = 2000;
 };

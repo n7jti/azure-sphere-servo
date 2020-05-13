@@ -1,11 +1,13 @@
 {
-    "SchemaVersion": 1,
-    "Name": "Servo_Test",
-    "ComponentId": "459b58f5-4101-4197-a80c-f1de97ac2bd4",
-    "EntryPoint": "/bin/app",
-    "CmdArgs": [],
-    "Capabilities": {
-      "Pwm": [ "PWM-CONTROLLER-0" ]
-      },
-    "ApplicationType": "Default"
-  }
+  "SchemaVersion": 1,
+  "Name": "Servo_Test",
+  "ComponentId": "459b58f5-4101-4197-a80c-f1de97ac2bd4",
+  "EntryPoint": "/bin/app",
+  "CmdArgs": [],
+  "Capabilities": {
+    "Pwm": [
+      "PWM-CONTROLLER-1"
+    ]
+  },
+  "ApplicationType": "Default"
+}
